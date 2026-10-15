@@ -24,7 +24,7 @@ data/processed/*
 !data/processed/.gitkeep
 
 # Synthea tooling
-synthea/
+/synthea/
 *.jar
 
 # Models: keep metrics, ignore large binaries
