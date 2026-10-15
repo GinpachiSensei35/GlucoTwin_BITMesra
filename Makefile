@@ -16,7 +16,7 @@ train:
 	$(PY) -m src.model.train
 
 api:
-	$(PY) -m uvicorn api.main:app --reload --port 8000
+	$(PY) -m uvicorn api.main:app --reload --port 8800
 
 dashboard:
 	$(PY) -m streamlit run dashboard/app.py

@@ -23,7 +23,7 @@ py -3.11 -m venv .venv            # or: python3.11 -m venv .venv
 ```bash
 make data        # build patients, wearables, features
 make train       # train + evaluate, writes models/metrics.json
-make api         # FastAPI on :8000
+make api         # FastAPI on :8800 (docs at /docs)
 make dashboard   # Streamlit dashboard
 ```
 
