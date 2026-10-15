@@ -139,8 +139,12 @@ def _sleep_multiplier(hours, eff):
     return 1 + 0.15 * short + 0.10 * poor
 
 
-def simulate_glucose(patient, inputs: dict, seed: int = 0) -> pd.DataFrame:
-    """Physiology: CGM glucose + heart rate from behaviour inputs."""
+def simulate_glucose(patient, inputs: dict, seed: int = 0, noise_seed: int | None = None,
+                     noise_from: int = 0) -> pd.DataFrame:
+    """Physiology: CGM glucose + heart rate from behaviour inputs.
+    Monte Carlo: with `noise_seed`, glucose noise is identical to the patient's own stream up to
+    bin `noise_from`, then continues the same AR processes with fresh innovations (the twin
+    conditions on the present state and re-draws only the future)."""
     prm = patient_params(patient, seed)
     tl, sleep = inputs["timeline"], inputs["sleep"]
     n = len(tl)
@@ -183,6 +187,10 @@ def simulate_glucose(patient, inputs: dict, seed: int = 0) -> pd.DataFrame:
     rng = np.random.default_rng([seed, 2])
     drift = _ar1(rng, n, phi=0.98, sd=1.5)
     sensor = _ar1(rng, n, phi=0.7, sd=2.5)
+    if noise_seed is not None:
+        alt = np.random.default_rng([seed, 3, noise_seed])
+        drift = _ar1(alt, n, phi=0.98, sd=1.5, keep=drift, start=noise_from)
+        sensor = _ar1(alt, n, phi=0.7, sd=2.5, keep=sensor, start=noise_from)
     glucose = np.clip(g + drift + sensor, 40, 400)
 
     # Heart rate: rises with activity (smoothed), drops in sleep
@@ -201,11 +209,13 @@ def simulate_glucose(patient, inputs: dict, seed: int = 0) -> pd.DataFrame:
     })
 
 
-def _ar1(rng, n: int, phi: float, sd: float) -> np.ndarray:
+def _ar1(rng, n: int, phi: float, sd: float, keep: np.ndarray | None = None, start: int = 0) -> np.ndarray:
+    """Stationary AR(1). With `keep`, values before `start` are kept and the process continues from there."""
     e = rng.normal(0, sd, n)
-    x = np.empty(n)
-    x[0] = e[0] / np.sqrt(1 - phi**2)
-    for i in range(1, n):
+    x = np.empty(n) if keep is None else keep.copy()
+    if start == 0:
+        x[0] = e[0] / np.sqrt(1 - phi**2)
+    for i in range(max(start, 1), n):
         x[i] = phi * x[i - 1] + e[i]
     return x
 
