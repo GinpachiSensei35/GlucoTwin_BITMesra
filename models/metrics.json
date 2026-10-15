@@ -1,0 +1,86 @@
+{
+  "note": "All data synthetic (Synthea EHR + GlucoTwin simulator). Model partly learns the simulator; validation on real CGM data is future work. Research prototype, not a medical device.",
+  "task": "P(max glucose in (t, t+120 min] > 180 mg/dL)",
+  "eval_population": "test-patient rows with current glucose <= 180 mg/dL",
+  "split": {
+    "method": "GroupShuffleSplit by patient",
+    "test_size": 0.25,
+    "seed": 42,
+    "train_patients": 178,
+    "test_patients": 60,
+    "train_rows": 668952,
+    "test_rows": 227025,
+    "test_positive_rate": 0.1252
+  },
+  "precision_target": 0.8,
+  "model": {
+    "name": "LightGBM",
+    "auroc": 0.9715,
+    "auprc": 0.8358,
+    "recall_at_precision_0.8": 0.6555,
+    "alert_threshold": 0.629,
+    "events": 1282,
+    "events_alerted": 1219,
+    "event_recall": 0.9509,
+    "median_lead_min": 95.0
+  },
+  "baseline": {
+    "name": "current glucose > threshold",
+    "auroc": 0.5541,
+    "auprc": 0.1616,
+    "recall_at_precision_0.8": 0.0,
+    "alert_threshold": null
+  },
+  "all_test_rows": {
+    "model": {
+      "auroc": 0.9602,
+      "auprc": 0.8339
+    },
+    "baseline": {
+      "auroc": 0.6755,
+      "auprc": 0.4867
+    }
+  },
+  "top_features": [
+    {
+      "feature": "hour_sin",
+      "mean_abs_shap": 1.4998
+    },
+    {
+      "feature": "hour_cos",
+      "mean_abs_shap": 1.4921
+    },
+    {
+      "feature": "hba1c",
+      "mean_abs_shap": 0.4089
+    },
+    {
+      "feature": "mins_since_meal",
+      "mean_abs_shap": 0.3123
+    },
+    {
+      "feature": "steps_1h",
+      "mean_abs_shap": 0.2943
+    },
+    {
+      "feature": "carbs_1h",
+      "mean_abs_shap": 0.2803
+    },
+    {
+      "feature": "glucose_min_120",
+      "mean_abs_shap": 0.2028
+    },
+    {
+      "feature": "bmi",
+      "mean_abs_shap": 0.2025
+    },
+    {
+      "feature": "sleep_eff_last_night",
+      "mean_abs_shap": 0.1767
+    },
+    {
+      "feature": "carbs_2h",
+      "mean_abs_shap": 0.1526
+    }
+  ]
+}
