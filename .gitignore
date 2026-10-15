@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ipynb_checkpoints/
+*.egg-info/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+
+# Data: keep a small Synthea sample committed under data/raw/synthea/sample/
+data/raw/synthea/*
+!data/raw/synthea/.gitkeep
+!data/raw/synthea/sample/
+data/processed/*
+!data/processed/.gitkeep
+
+# Synthea tooling
+synthea/
+*.jar
+
+# Models: keep metrics, ignore large binaries
+models/*
+!models/.gitkeep
+!models/metrics.json
+
+# Streamlit
+.streamlit/secrets.toml
