@@ -15,7 +15,7 @@ A doctor-facing dashboard shows all of this.
 
 ## Stack
 - Python 3.11, pandas, numpy, scikit-learn, LightGBM, SHAP, joblib
-- Synthea (Java 17+) for EHR generation, CSV exporter
+- Synthea pre-generated sample CSVs (no Java needed) for EHR data; fallback: our own Python EHR generator in src/ehr/generate.py
 - FastAPI + uvicorn for the model/twin API
 - Streamlit + Plotly for the doctor dashboard
 - pytest for basic tests
